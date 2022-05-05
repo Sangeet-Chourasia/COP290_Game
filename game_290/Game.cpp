@@ -1,16 +1,17 @@
-#include "SDL2/SDL.h"
-#include <SDL2/SDL_image.h>
 #include<iostream>
+#include<fstream>
 #include "globals.h"
 #include "Main_Menu.h"
+#include "Sound.h"
 
 using namespace std;
 #define EXTERN
 
 bool initialize();
+bool load_matrix();
+bool load_sound();
 bool load_all_media();
 void close();
-
 int main(void)
 {
     if((initialize() && load_all_media())==false)
@@ -19,6 +20,7 @@ int main(void)
         return 0;
     }
     game_running=true;
+    Mix_PlayChannel(-1, gHigh, 0);
     SDL_RenderCopy(renderer,welcome_background,NULL,NULL);
     SDL_RenderPresent(renderer);
     SDL_Delay(2000);
@@ -38,9 +40,14 @@ int main(void)
 
 bool initialize()
 {
-    if(SDL_Init(SDL_INIT_VIDEO)<0)
+    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO )<0)
     {
         cout<<"SDL could not initialize! SDL_Error: "<<SDL_GetError()<<" \n";
+        return false;
+    }
+    if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+    {
+        cout<<"SDL_mixer could not initialize! Error:"<<Mix_GetError()<<endl;
         return false;
     }
     window=SDL_CreateWindow("Welcome_to_the Game",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,SCREEN_WIDTH,SCREEN_HEIGHT,SDL_WINDOW_SHOWN);
@@ -84,5 +91,69 @@ bool load_all_media()
         cout<<"SDL could not load spritesheet_boy texture! SDL_Error: "<<SDL_GetError()<<" \n";
         return false;       
     }
+    map=IMG_LoadTexture(renderer,"Images/map.jpeg");
+    if(map==NULL)
+    {
+        cout<<"SDL could not load map! SDL_Error: "<<SDL_GetError()<<" \n";
+        return false;
+    }
+    SDL_QueryTexture(map, NULL, NULL, &map_w,&map_h);
+    ifstream file("matrix.txt");
+    /*if(!load_matrix())
+    {
+        cout<<"could not load matrix"<<endl;
+        return false;
+    }*/
+    if(!load_sound())
+    {
+        cout<<"could not load sound"<<endl;
+        return false;
+    }
     return true;
+}
+
+
+
+bool load_sound()
+{
+    gMusic = Mix_LoadMUS("bensound-ukulele.mp3");
+    if (gMusic == NULL)
+    {
+        SDL_Log("Failed to load music [bensound-ukulele.mp3]. Error: %s", Mix_GetError());
+        return false;
+    }
+
+  // load sfx, scratch.wav
+    gScratch = Mix_LoadWAV("scratch.wav");
+    if (gScratch == NULL)
+    {
+        SDL_Log("Failed to load sfx [scratch.wav]. Error: %s", Mix_GetError());
+        return false;
+    }
+
+  // load sfx, high.wav
+    gHigh = Mix_LoadWAV("high.wav");
+    if (gHigh == NULL)
+    {
+        SDL_Log("Failed to load sfx [high.wav]. Error %s", Mix_GetError());
+        return false;
+    }
+
+    // load sfx, medium.wav
+    gMedium = Mix_LoadWAV("medium.wav");
+    if (gMedium == NULL)
+    {
+        SDL_Log("Failed to load sfx [medium.wav]. Error %s", Mix_GetError());
+        return false;
+    }
+
+    // load sfx, low.wav
+    gLow = Mix_LoadWAV("low.wav");
+    if (gLow == NULL)
+    {
+        SDL_Log("Failed to laod sfx [low.wav]. Error %s", Mix_GetError());
+        return false;
+    }
+    return true;   
+
 }

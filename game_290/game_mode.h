@@ -1,4 +1,3 @@
-#include "SDL2/SDL.h"
 #include "globals.h"
 #include "animation.h"
 using namespace std;
@@ -27,6 +26,7 @@ void game_mode(SDL_Window* window,SDL_Renderer* renderer)
     double sf_x=SCREEN_WIDTH/(menu_w*1.0)  ;    // scaling factor in x
     double sf_y=SCREEN_HEIGHT/(menu_h*1.0)  ;    // scaling factor in y
     game_mode_on=true;
+    //Mix_PlayMusic(gMusic,-1);
     while(game_mode_on && game_running) 
     {
         SDL_Event e;
