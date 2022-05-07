@@ -25,6 +25,8 @@ Install SDL_mixer using sudo apt-get install libsdl2-mixer-dev.
 
 The instructions mentioned above for various installations were used on Ubuntu 20.04.
 
+
+
 References
 https://github.com/schuay/pacman
 https://lazyfoo.net/tutorials/SDL/
